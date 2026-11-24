@@ -1,0 +1,23 @@
+{
+  "name": "AI shopping & Deal-finder Agent",
+  "description": "",
+  "metadata": {
+    "ls_user_id": "ed8e768e-54cb-4baf-9265-94ff7dc786ce",
+    "organization_id": "01a1e305-49e2-7293-8b47-a9fa56deab6b",
+    "tenant_id": "ceb1b9e3-e893-4772-b753-ea8040be3c32",
+    "agent_type": "personal"
+  },
+  "config": {
+    "configurable": {
+      "should_trace_inputs_outputs": true,
+      "skip_memory_write_protection": false,
+      "llm_model_config": {
+        "modelId": "langchain:pro"
+      },
+      "backend_type": "default",
+      "sandbox_snapshot_id": "",
+      "visibility_scope": "user",
+      "triggers_paused": false
+    }
+  }
+}
