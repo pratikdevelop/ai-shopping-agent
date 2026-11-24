@@ -10,4 +10,6 @@ dependencies = [
     "langchain-anthropic>=1.7.7",
     "langchain-openai>=1.7.3",
     "langchain-google-genai>=4.4.2",
+    "langchain-nvidia-ai-endpoints>=1.5.0",
+    "langchain-groq>=1.2.1",
 ]

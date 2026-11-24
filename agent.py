@@ -24,6 +24,7 @@ from custom_middleware import custom_middleware
 from custom_tools import custom_tools
 from deepagents import create_deep_agent
 from fleet_deepagents_export import StaticSkillsLoader, load_agent_components
+from model_provider import create_chat_model
 
 PROJECT_DIR = Path(__file__).parent
 FLEET_DIR = PROJECT_DIR / "fleet"
@@ -41,7 +42,11 @@ _SKILL_LOADER = StaticSkillsLoader(
 async def graph(runtime: Any):
     """Build and return the agent graph."""
     components = await load_agent_components(FLEET_DIR)
-    model = components.pop("model")  # from fleet/config.json; replace to override
+# Remove Fleet-specific model configuration.
+components.pop("model", None)
+
+# Initialize independent production LLM.
+model = create_chat_model()    
     components["tools"] = list(components["tools"]) + list(custom_tools)
 
     if _SKILL_LOADER.files:
