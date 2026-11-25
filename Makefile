@@ -1,10 +1,7 @@
-.PHONY: setup dev run
+.PHONY: run dev
 
-setup: ## Install dependencies
-	uv sync
+run:
+	uv run --active python cli.py
 
-dev: ## Start LangGraph dev server
-	uv run langgraph dev --allow-blocking
-
-run: ## Run agent directly in CLI mode
-	uv run python cli.py
+dev:
+	uv run --active langgraph dev

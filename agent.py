@@ -1,15 +1,4 @@
-"""Standalone deepagent exported from LangSmith Fleet.
-
-LangGraph Studio / dev server:  make dev
-Terminal:                        make run  (see cli.py)
-
-Extension points (edit these, not this file):
-- ``custom_tools.py``      — add code-defined tools
-- ``custom_middleware.py`` — wrap the agent loop with logging, filters, etc.
-- ``custom_skills/``       — drop ``<skill-name>/SKILL.md`` files
-
-Re-exports from Fleet overwrite ``fleet/`` but leave these files untouched.
-"""
+"""Standalone deepagent exported from LangSmith Fleet."""
 
 from __future__ import annotations
 
@@ -23,14 +12,19 @@ load_dotenv()
 from custom_middleware import custom_middleware
 from custom_tools import custom_tools
 from deepagents import create_deep_agent
-from fleet_deepagents_export import StaticSkillsLoader, load_agent_components
+from fleet_deepagents_export import (
+    StaticSkillsLoader,
+    load_agent_components,
+)
 from model_provider import create_chat_model
+
 
 PROJECT_DIR = Path(__file__).parent
 FLEET_DIR = PROJECT_DIR / "fleet"
 CUSTOM_SKILLS_DIR = PROJECT_DIR / "custom_skills"
 
-# Read SKILL.md from disk once; middleware injects into state on first turn.
+
+# Load exported Fleet skills and custom skills.
 _SKILL_LOADER = StaticSkillsLoader(
     [
         (FLEET_DIR / "skills", "/skills/fleet"),
@@ -40,20 +34,48 @@ _SKILL_LOADER = StaticSkillsLoader(
 
 
 async def graph(runtime: Any):
-    """Build and return the agent graph."""
+    """Build and return the shopping agent graph."""
+
+    # Load Fleet configuration, tools and instructions.
     components = await load_agent_components(FLEET_DIR)
-# Remove Fleet-specific model configuration.
-components.pop("model", None)
+    # Temporary debugging: show tools loaded from Fleet
+    fleet_tools = list(components.get("tools") or [])
 
-# Initialize independent production LLM.
-model = create_chat_model()    
-    components["tools"] = list(components["tools"]) + list(custom_tools)
+    print(f"\n[DEBUG] Fleet tools loaded: {len(fleet_tools)}", flush=True)
 
+    for tool in fleet_tools:
+        if isinstance(tool, dict):
+            name = tool.get("name", "unknown")
+        else:
+            name = getattr(tool, "name", type(tool).__name__)
+
+    print(f"[DEBUG] Tool: {name}", flush=True)
+
+    # Remove Fleet-specific model configuration.
+    components.pop("model", None)
+
+    # Initialize independently configured LLM.
+    model = create_chat_model()
+
+    # Combine Fleet MCP tools and custom Python tools.
+    # components["tools"] = (
+    #     list(components.get("tools", []))
+    #     + list(custom_tools)
+    # )
+    components["tools"] = fleet_tools + list(custom_tools)
+
+    # Register shopping skills.
     if _SKILL_LOADER.files:
         components["skills"] = _SKILL_LOADER.skill_paths
 
+    # Build the production Deep Agent.
     return create_deep_agent(
         model=model,
-        middleware=[_SKILL_LOADER, *custom_middleware],
+        middleware=[
+            _SKILL_LOADER,
+            *custom_middleware,
+        ],
         **components,
-    ).with_config({"recursion_limit": 1000})
+    ).with_config(
+        {"recursion_limit": 1000}
+    )
