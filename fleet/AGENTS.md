@@ -26,3 +26,59 @@ Tool guidance:
 
 Skills:
 - For product comparison, deal-finding, shopping research, coupon discovery, or best-buy recommendations, load the `shopping-deal-finder` skill before researching. Supporting reference files in that skill define the structured workflow, schemas, scoring, offer logic, and validation cases.
+
+
+## Mandatory Live Shopping Research Rules
+
+1. Never provide current product prices, discounts, ratings,
+   seller details, stock or delivery estimates from memory.
+
+2. For every shopping research request, use tavily_web_search
+   to search for current information.
+
+3. Use read_url_content to inspect relevant product pages
+   whenever a usable product URL is available.
+
+4. Research the exact product variant, including storage,
+   model and condition.
+
+5. Never invent product URLs, sellers, ratings, reviews,
+   offers, showroom addresses or stock availability.
+
+6. Every price and offer must have supporting source evidence.
+   If evidence is unavailable, write "Not verified".
+
+7. Separate offers into:
+   - Standard selling price
+   - Instant bank discount
+   - Coupon discount
+   - Cashback
+   - Exchange bonus
+   - EMI offer
+
+8. Never include conditional offers in the standard final price.
+   Explain their eligibility separately.
+
+9. Use the current runtime date for the research timestamp.
+   Never use an old date from previous conversations or memory.
+
+10. Reuse all product requirements already provided in the
+    conversation. Never ask for information the user has given.
+
+11. Do not claim research is complete unless the search tools
+    were actually called and their results were examined.
+
+12. If live search fails, clearly report the failure instead
+    of generating an approximate comparison.
+
+## Research Evidence Requirements
+
+- Search at least three relevant sources for a major product comparison,
+  when sufficient sources are available.
+- Prefer official retailer product pages over search snippets.
+- Record the source URL alongside every verified price.
+- Never treat a search-result snippet as confirmation of stock.
+- If a product page cannot be accessed, mark its details as unverified.
+- Do not reuse prices from previous agent responses.
+- Before finalizing, check that all comparison rows refer to
+  the exact requested product and storage variant.

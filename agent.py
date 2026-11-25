@@ -38,18 +38,20 @@ async def graph(runtime: Any):
 
     # Load Fleet configuration, tools and instructions.
     components = await load_agent_components(FLEET_DIR)
-    # Temporary debugging: show tools loaded from Fleet
+
     fleet_tools = list(components.get("tools") or [])
 
     print(f"\n[DEBUG] Fleet tools loaded: {len(fleet_tools)}", flush=True)
 
-    for tool in fleet_tools:
+    for index, tool in enumerate(fleet_tools, start=1):
         if isinstance(tool, dict):
             name = tool.get("name", "unknown")
         else:
             name = getattr(tool, "name", type(tool).__name__)
 
-    print(f"[DEBUG] Tool: {name}", flush=True)
+        # IMPORTANT: This print must be inside the for loop.
+    print(f"[DEBUG] {index}. {name}", flush=True)
+
 
     # Remove Fleet-specific model configuration.
     components.pop("model", None)
