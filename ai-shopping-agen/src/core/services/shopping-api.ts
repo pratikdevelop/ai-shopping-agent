@@ -22,6 +22,7 @@ export interface SearchStatusResponse {
   query: string;
   message: string;
   warnings: string[];
+  answer: string | null;
   created_at: string;
   completed_at: string | null;
 }
@@ -31,13 +32,14 @@ export interface SearchDealsResponse {
   status: SearchStatusResponse['status'];
   mode: string;
   deals: unknown[];
+  answer: string | null;
   warnings: string[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingApi {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/v1/shopping';
+  private readonly baseUrl = 'http://localhost:8000/api/v1/shopping';
 
   createSearch(payload: ProductSearchRequest): Observable<SearchStatusResponse> {
     return this.http.post<SearchStatusResponse>(`${this.baseUrl}/search`, payload);

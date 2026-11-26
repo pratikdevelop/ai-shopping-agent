@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ShoppingApi, SearchStatusResponse } from './core/services/shopping-api';
+import { ShoppingApi, SearchStatusResponse } from '../core/services/shopping-api';
 
 @Component({
   selector: 'app-root',
@@ -71,11 +71,13 @@ export class App {
       next: (result) => {
         this.searchResult.set(result);
         this.isSubmitting.set(false);
-        this.dealsMessage.set(
-          result.mode === 'placeholder'
-            ? 'The API accepted your request. Live retailer research will be connected in a later step.'
-            : 'Your shopping research request was submitted.',
-        );
+        if (result.status === 'failed') {
+          this.dealsMessage.set('The shopping agent could not complete this request. See the warning below.');
+        } else if (result.status === 'partial') {
+          this.dealsMessage.set('The agent returned an answer, but some live-research evidence could not be confirmed.');
+        } else {
+          this.dealsMessage.set('The LangGraph shopping agent returned its research response.');
+        }
       },
       error: (error: HttpErrorResponse) => {
         this.isSubmitting.set(false);

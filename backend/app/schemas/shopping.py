@@ -1,4 +1,4 @@
-"""Pydantic schemas for the first shopping-search API milestone."""
+"""Pydantic schemas for shopping search requests and responses."""
 
 from __future__ import annotations
 
@@ -46,9 +46,7 @@ class ProductSearchRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_local_search_location(self) -> "ProductSearchRequest":
-        if self.include_local_stores and not any(
-            (self.city, self.state, self.postal_code)
-        ):
+        if self.include_local_stores and not any((self.city, self.state, self.postal_code)):
             raise ValueError(
                 "Provide a city, state, or postal code when local-store search is enabled."
             )
@@ -58,10 +56,11 @@ class ProductSearchRequest(BaseModel):
 class SearchStatusResponse(BaseModel):
     search_id: UUID
     status: SearchStatus
-    mode: str = "placeholder"
+    mode: str = "langgraph"
     query: str
     message: str
     warnings: list[str] = Field(default_factory=list)
+    answer: str | None = None
     created_at: datetime
     completed_at: datetime | None = None
 
@@ -69,6 +68,7 @@ class SearchStatusResponse(BaseModel):
 class SearchDealsResponse(BaseModel):
     search_id: UUID
     status: SearchStatus
-    mode: str = "placeholder"
+    mode: str = "langgraph"
     deals: list[dict[str, Any]] = Field(default_factory=list)
+    answer: str | None = None
     warnings: list[str] = Field(default_factory=list)

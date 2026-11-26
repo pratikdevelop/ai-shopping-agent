@@ -1,5 +1,7 @@
 """FastAPI entry point for the AI Shopping & Deal-Finder API."""
 
+import asyncio
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -11,9 +13,14 @@ app = FastAPI(
     version=APP_VERSION,
     description=(
         "Backend API for the AI Shopping & Deal-Finder application. "
-        "Shopping search currently returns clearly labelled placeholder data."
+        "Shopping searches are executed by the existing LangGraph agent."
     ),
 )
+
+# The graph is initialized lazily on the first search, so /api/health remains
+# available even when an LLM key or Fleet MCP connection needs configuration.
+app.state.shopping_agent = None
+app.state.shopping_agent_lock = asyncio.Lock()
 
 app.add_middleware(
     CORSMiddleware,

@@ -208,3 +208,18 @@ h1 span { color: #4a9d78; }
   .page-footer { flex-direction: column; }
   .result-heading { align-items: flex-start; flex-direction: column; }
 }
+
+/* LangGraph answer presentation */
+.agent-answer {
+  margin-top: 16px;
+  padding: 18px 20px;
+  border: 1px solid #e8edf0;
+  border-radius: 9px;
+  background: #fbfcfd;
+  color: #344256;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
