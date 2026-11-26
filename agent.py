@@ -49,8 +49,7 @@ async def graph(runtime: Any):
         else:
             name = getattr(tool, "name", type(tool).__name__)
 
-        # IMPORTANT: This print must be inside the for loop.
-    print(f"[DEBUG] {index}. {name}", flush=True)
+        print(f"[DEBUG] {index}. {name}", flush=True)
 
 
     # Remove Fleet-specific model configuration.
